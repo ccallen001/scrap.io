@@ -102,7 +102,7 @@ function showToasty(capturedEmail) {
 						toastyContainer.style.transform = 'translate(100%)';
 						showToasty.isShowing = false;
 					}, 2000);
-				}, 1);
+				}, 100);
 			});
 	}
 }
