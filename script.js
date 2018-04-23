@@ -23,6 +23,30 @@ function postEmailToDb(capturedEmail) {
 	});
 }
 
+function sendEmail(capturedEmail) {
+	fetch('https://scrapio-335b.restdb.io/mail', {
+		method: 'POST',
+		headers: {
+			'content-type': 'application/json',
+			'x-apikey': '3cbd592182bfba0d6b3cc0c575b8c03b26993',
+			'cache-control': 'no-cache'
+		},
+		body: JSON.stringify({
+			'to': capturedEmail,
+			'company': '',
+			'sendername': 'Scrap.io',
+			'subject': 'Your email was captured by Scrap.io',
+			'html': `
+				<h1>Your email, ${capturedEmail}, was captured!</h1>
+				<p>Your email address is now known to the Scrap.io system.</p>
+				<h4>Thank you!</h4>
+				<p>- the Scrap.io Team</p>
+			`
+		})
+	})
+		.then(() => console.log(`Email sent to ${capturedEmail}.`));
+}
+
 function showToasty(capturedEmail) {
 	if (!showToasty.isShowing) {
 		showToasty.isShowing = true;
@@ -67,6 +91,7 @@ function showToasty(capturedEmail) {
 
 						if (!emailIsKnown) {
 							postEmailToDb(capturedEmail);
+							sendEmail(capturedEmail);
 						}
 
 						msgDisplay.textContent = emailIsKnown ? 'I know you!' : 'email captured';
