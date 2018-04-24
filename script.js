@@ -95,12 +95,15 @@ function showToasty(capturedEmail) {
 						}
 
 						msgDisplay.textContent = emailIsKnown ? 'I know you!' : 'email captured';
-					}, transitionTime + 200);
+					}, transitionTime + 100);
 
 					setTimeout(() => {
 						msgDisplay.textContent = null;
 						toastyContainer.style.transform = 'translate(100%)';
 						showToasty.isShowing = false;
+						setTimeout(() => {
+							document.body.removeChild(toastyContainer);
+						}, transitionTime + 100);
 					}, 2000);
 				}, 100);
 			});
